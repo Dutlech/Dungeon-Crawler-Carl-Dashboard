@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Dungeon Crawler Carl · Character Map</title>
+  <link rel="stylesheet" href="./style.css?v=quotes-1">
+  <script defer src="./vendor/plotly.min.js"></script>
+  <script defer src="./app.js?v=quotes-1"></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div>
+        <h1>Dungeon Crawler Carl <span>Dashboard</span></h1>
+        <nav class="site-tabs" aria-label="Dashboard pages">
+          <a class="current" aria-current="page" href="./index.html">Character Map</a>
+          <a href="./network.html">Network Explorer</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="controls" aria-label="Dashboard filters">
+      <label class="control character-control">
+        <span>Character</span>
+        <input id="character-search" type="search" placeholder="Filter characters…" autocomplete="off" aria-label="Filter character list">
+        <select id="character-select" aria-label="Select character"></select>
+      </label>
+      <label class="control">
+        <span>Chapter view</span>
+        <select id="book-select">
+          <option value="all">All eight books</option>
+        </select>
+      </label>
+      <label class="control">
+        <span>Intensity</span>
+        <select id="metric-select">
+          <option value="mentions">Name mentions</option>
+          <option value="per_10000_words">Per 10,000 words</option>
+        </select>
+      </label>
+    </section>
+
+    <div id="load-error" class="error" hidden role="alert"></div>
+
+    <section id="overview" class="stat-row" aria-label="Character overview">
+      <div class="stat"><span>Total mentions</span><strong id="total-mentions">—</strong></div>
+      <div class="stat"><span>Chapters mentioned</span><strong id="chapters-mentioned">—</strong></div>
+      <div class="stat"><span>First mention</span><strong id="first-mention">—</strong></div>
+      <div class="stat"><span>Longest gap</span><strong id="longest-gap">—</strong></div>
+    </section>
+
+    <main class="panels">
+      <section class="panel trend-panel">
+        <div class="panel-header">
+          <div><p class="eyebrow">BOOK DISTRIBUTION</p><h2>Across the series</h2></div>
+          <span class="panel-note">Select a bar to explore a book</span>
+        </div>
+        <div id="book-chart" class="chart" aria-label="Mentions by book"></div>
+      </section>
+
+      <section class="panel profile-panel">
+        <div class="panel-header">
+          <div><p class="eyebrow">CHARACTER DATA</p><h2 id="profile-name">Character profile</h2></div>
+        </div>
+        <dl class="profile-list">
+          <div><dt>First recorded mention</dt><dd id="profile-first">—</dd></div>
+          <div><dt>Last recorded mention</dt><dd id="profile-last">—</dd></div>
+          <div><dt>Distinct absence periods</dt><dd id="profile-absences">—</dd></div>
+          <div><dt>Longest absence</dt><dd id="profile-longest">—</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel heatmap-panel">
+        <div class="panel-header">
+          <div><p class="eyebrow">CHAPTER APPEARANCES</p><h2>Activity heatmap</h2></div>
+          <div class="heatmap-legend">
+            <span>None</span>
+            <i class="swatch empty"></i>
+            <span>Low</span>
+            <i class="heatmap-gradient"></i>
+            <span>High</span>
+          </div>
+        </div>
+        <div id="heatmap" class="heatmap" aria-label="Character mentions by chapter"></div>
+        <p id="chapter-detail" class="chapter-detail" aria-live="polite">Select a chapter square for details.</p>
+      </section>
+
+
+      <section class="panel ranking-panel">
+        <div class="panel-header">
+          <div><p class="eyebrow">FREQUENCY OF MENTIONS</p><h2 id="ranking-title">Most mentioned</h2></div>
+          <span class="panel-note">Click to select a character</span>
+        </div>
+        <div class="table-scroll">
+          <table><thead><tr><th>Rank</th><th>Character</th><th>Mentions</th></tr></thead><tbody id="ranking-body"></tbody></table>
+        </div>
+      </section>
+
+      <section class="panel network-panel">
+        <div class="panel-header">
+          <div><p class="eyebrow">NEARBY NAMES</p><h2>Close connections</h2></div>
+          <span class="panel-note">Within 20 words</span>
+        </div>
+        <div class="table-scroll">
+          <table><thead><tr><th>Other character</th><th>Connections</th><th>Same Paragraph/Block</th></tr></thead><tbody id="network-body"></tbody></table>
+        </div>
+        <p class="small-note">Counts measure pairs of nearby name occurrences.</p>
+      </section>
+
+
+      <section class="panel comparison-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">COMPARE CHARACTERS</p>
+            <h2>Across the series</h2>
+          </div>
+
+          <label class="comparison-style">
+            Chart style
+            <select id="comparison-style">
+              <option value="line">Line chart</option>
+              <option value="bar">Grouped bar chart</option>
+            </select>
+          </label>
+        </div>
+
+
+        <div class="comparison-actions">
+          <button id="comparison-top10" type="button">
+            Top 10
+          </button>
+
+          <button id="comparison-none" type="button">
+            None
+          </button>
+        </div>
+
+        <p
+          id="comparison-summary"
+          class="comparison-summary"
+          aria-live="polite"
+        ></p>
+
+        <div
+          id="comparison-selected"
+          class="comparison-selected"
+          aria-label="Selected characters"
+        ></div>
+
+        <details class="comparison-picker">
+          <summary>Browse characters</summary>
+
+          <div class="comparison-picker-content">
+            <input
+              id="comparison-search"
+              type="search"
+              placeholder="Search by character name…"
+              aria-label="Filter comparison characters"
+              autocomplete="off"
+            >
+
+            <div
+              id="comparison-options"
+              class="comparison-options"
+              role="group"
+              aria-label="Select characters to compare"
+            ></div>
+          </div>
+        </details>
+
+
+        <div
+          id="comparison-easter-eggs"
+          class="comparison-easter-eggs"
+          aria-live="polite"
+          hidden
+        ></div>
+
+        <p id="comparison-message" class="small-note" aria-live="polite"></p>
+
+        <h3>Name mentions by book</h3>
+        <div id="comparison-count-chart" class="comparison-chart"></div>
+
+        <h3>Share of selected characters' mentions</h3>
+        <div id="comparison-percent-chart" class="comparison-chart"></div>
+
+        <p class="small-note">
+          Percentages show each character's share of mentions among
+          the characters selected above, not among every character.
+        </p>
+      </section>      
+
+    </main>
+  </div>
+  <script data-goatcounter="https://dutlech.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Dungeon Crawler Carl · Network Explorer</title>
+  <link rel="stylesheet" href="./network.css">
+  <script defer src="./vendor/plotly.min.js"></script>
+  <script defer src="./network_page.js?v=network-default-2"></script>
+</head>
+<body>
+  <div class="shell network-shell">
+    <header class="masthead network-masthead">
+      <div>
+        <h1>Dungeon Crawler Carl <span>Database</span></h1>
+        <nav class="site-tabs" aria-label="Dashboard pages">
+          <a href="./index.html">Character Map</a>
+          <a class="current" aria-current="page" href="./network.html">Network Explorer</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="network-page-controls" aria-label="Network filters">
+      <label>Book
+        <select id="full-book">
+          <option value="all">All eight books</option>
+        </select>
+      </label>
+      <label>Connection measure
+        <select id="full-measure">
+          <option value="connections">Within 20 words</option>
+          <option value="same_block_connections">Same text block</option>
+        </select>
+      </label>
+      <label>Minimum connections
+        <input
+          id="full-minimum"
+          type="number"
+          min="1"
+          step="1"
+          value="5"
+          inputmode="numeric"
+        >
+      </label>
+      <label>Find a character
+        <input id="full-search" type="search" placeholder="Search names…" list="network-characters" autocomplete="off">
+        <datalist id="network-characters"></datalist>
+      </label>
+      <label class="network-check">
+        <input id="show-isolated" type="checkbox">
+        Show unconnected characters with mentions
+      </label>
+      <label class="network-check">
+        <input id="show-labels" type="checkbox">
+        Label every node
+      </label>
+    </section>
+
+    <div id="network-error" class="error" hidden role="alert"></div>
+    <p class="network-page-summary" id="network-summary" aria-live="polite">Loading network…</p>
+
+    <main class="full-network-layout">
+      <section class="panel network-canvas-panel" aria-label="Complete character network">
+        <div id="full-network-plot" class="full-network-plot"></div>
+        <p class="small-note">Drag to pan; scroll to zoom. Click a node to highlight connections. Node colors show communities identified using Louvain method.</p>
+      </section>
+      <aside class="panel network-details">
+        <div class="panel-header"><div><p class="eyebrow">SELECTED CHARACTER</p><h2 id="detail-name">All characters</h2></div></div>
+        <p id="detail-description" class="small-note">Select a node or search for a character.</p>
+        <p><a id="open-profile" class="profile-link" href="./index.html" hidden>Open character dashboard →</a></p>
+        <button type="button" id="clear-selection" class="subtle-button" hidden>Clear selection</button>
+        <h3>Strongest connections</h3>
+        <div id="detail-neighbors" class="detail-neighbors"><p class="small-note">Choose a character to see their strongest links.</p></div>
+      </aside>
+    </main>
+  </div>
+  <script data-goatcounter="https://dutlech.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
